@@ -66,7 +66,7 @@ def find_maximal_sets(universe, props, variables = None):
 
 
 # @profile
-def alt_aux(p, scales, subst):
+def alt_aux(p, scales, subst, extra_preds=None):
 	"""
 	Return alternatives to a formula following a Sauerland-esque algorithm. 
 	Specifically, an alternative is anything which can be obtained from the prejacent by sub-constituent replacement ("A" is an alternative to "A or B"), scale replacement ("a or b" is an alternative to "a and b")
@@ -81,9 +81,9 @@ def alt_aux(p, scales, subst):
 
 	"""
 
-	# A predicate has no alternatives
+	# A predicate has no alternatives besides itself and extra_preds
 	if isinstance(p, Pred):
-		return [p]
+		return [p] + (extra_preds or [])
 
 	# in case the prejacent is an Exh, its alternative are either stipulated or already computed as "p.alts"
 	# So the returned set of alternatives is just {Exh(alt) | alt \in p.alts} (+alt themselved if subst is active)
@@ -94,9 +94,9 @@ def alt_aux(p, scales, subst):
 		
 		exh_alternatives = [p]
 		exh_alternatives.extend(
-			[exhaust.Exh(alt, alts = all_alternatives[:i] + all_alternatives[i + 1:]) 
-		                    for i, alt in enumerate(all_alternatives) if i != 0 # <--- trick: we don't recompute exhaustification of the prejacent
-			]
+			[exhaust.Exh(alt, alts=all_alternatives[:i] + all_alternatives[i + 1:])
+             for i, alt in enumerate(all_alternatives) if i != 0  # <--- trick: we don't recompute exhaustification of the prejacent
+             ]
 		) 
 
 		# Somehow, sub-constituent alternative must not be disallowed to derive FC -- something to investigate
@@ -112,7 +112,7 @@ def alt_aux(p, scales, subst):
 
 
 	# Recursively obtain the alternatives of the children nodes of the prejacent 
-	children_alternative = [alt_aux(child, scales, subst) for child in p.children]
+	children_alternative = [alt_aux(child, scales, subst, extra_preds) for child in p.children]
 
 
 	root_fixed_alts = [] # alternatives which have the same root operator as the prejacent (ie. a | (b & c) as an alternative to a | (b | c), preserves root or)
@@ -148,14 +148,14 @@ def alt_aux(p, scales, subst):
 		return root_fixed_alts + scalar_alts
 
 # @profile
-def alt(p, scales = [], subst = False):
+def alt(p, scales=[], subst=False, extra_preds=None):
 	"""
 	Simplifies the result of alt_aux for efficiency
 
 	1) Simplify trivial alternatives: A or A -> A, B and B -> B
 	2) Remove duplicate alternatives: {A, B, B, A or B} -> {A, B, A or B}
 	"""
-	return remove_doubles(simplify_alts(alt_aux(p, scales, subst)))
+	return remove_doubles(simplify_alts(alt_aux(p, scales, subst, extra_preds)))
 	# return alt_aux(p, scales, subst)
 
 

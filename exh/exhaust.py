@@ -26,7 +26,7 @@ class Exhaust:
 	"""
 	
 	
-	def __init__(self, prejacent, alts = None, scales = None, subst = None, extra_alts = []):
+	def __init__(self, prejacent, alts=None, scales=None, subst=None, extra_alts=[], extra_preds=None):
 		"""
 		Arguments
 			- prejacent (Formula)       -- the prejacent
@@ -46,7 +46,7 @@ class Exhaust:
 			subst = options.sub
 
 		if alts is None: # if no alternative is given, compute them automatically
-			self.alts = alternatives.alt(prejacent, scales = scales, subst = subst)
+			self.alts = alternatives.alt(prejacent, scales=scales, subst=subst, extra_preds=extra_preds)
 		else:
 			self.alts = alts
 		self.alts += extra_alts
@@ -175,8 +175,8 @@ class Exh(prop.Operator):
 
 	substitutable = False
 	
-	def __init__(self, child, alts = None, scales = None, subst = None, ii = None, extra_alts = []):
-		self.e = Exhaust(child, alts, scales, subst, extra_alts)
+	def __init__(self, child, alts=None, scales=None, subst=None, ii=None, extra_alts=[], extra_preds=None):
+		self.e = Exhaust(child, alts, scales, subst, extra_alts, extra_preds)
 		super(Exh, self).__init__(None, child)
 
 		if ii is None:
@@ -230,7 +230,7 @@ class Exh(prop.Operator):
 	
 
 	def copy(self):
-		return Exh(self.prejacent, alts = self.alts)
+		return Exh(self.prejacent, alts=self.alts)
 
 	@classmethod
 	def alternative_to(cls, other):
