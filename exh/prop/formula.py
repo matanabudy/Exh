@@ -230,6 +230,46 @@ class Not(Operator):
 		super(Not, self).__init__(Not.fun_, child)
 
 
+class Nand(Operator):
+    plain_symbol = "nand"
+    latex_symbol = r"\nand"
+
+    fun_ = lambda array: ~np.min(array, axis=0)
+
+    def __init__(self, *children):
+        super(Nand, self).__init__(Nand.fun_, *children)
+
+
+class Nor(Operator):
+    plain_symbol = "nor"
+    latex_symbol = r"\nor"
+
+    fun_ = lambda array: ~np.max(array, axis=0)
+
+    def __init__(self, *children):
+        super(Nor, self).__init__(Nor.fun_, *children)
+
+
+class Xor(Operator):
+    plain_symbol = "xor"
+    latex_symbol = r"\xor"
+
+    fun_ = lambda array: np.max(array, axis=0) & ~np.min(array, axis=0)
+
+    def __init__(self, *children):
+        super(Xor, self).__init__(Xor.fun_, *children)
+
+
+class Iff(Operator):
+    plain_symbol = "iff"
+    latex_symbol = r"\iff"
+
+    fun_ = lambda array: np.min(array, axis=0) | ~np.max(array, axis=0)
+
+    def __init__(self, *children):
+        super(Iff, self).__init__(Iff.fun_, *children)
+
+
 
 
 ############### TAUTOLOGIES AND ANTILOGIES ########
