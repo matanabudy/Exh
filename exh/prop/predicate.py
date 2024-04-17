@@ -129,6 +129,9 @@ class Pred(Formula):
 	def __eq__(self, other):
 		return super(Pred, self).__eq__(other) and self.idx == other.idx
 
+	def __hash__(self):
+		return hash(self.idx)
+
 	def vars(self):
 		size_domains = [domain.n for domain in self.domains]
 

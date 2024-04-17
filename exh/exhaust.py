@@ -236,6 +236,8 @@ class Exh(prop.Operator):
 	def alternative_to(cls, other):
 		return cls(other.children[0], alts = other.alts)
 
+	def __hash__(self):
+		return hash((self.__class__, self.e.p, tuple(self.alts)))
 
 
 

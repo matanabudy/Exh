@@ -195,6 +195,9 @@ class Operator(Formula):
 	def alternative_to(cls, other):
 		return cls(*other.children)
 
+	def __hash__(self):
+		return hash((self.__class__, tuple(self.children)))
+
 
 class And(Operator):
 	plain_symbol = "and"
