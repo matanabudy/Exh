@@ -148,17 +148,18 @@ def alt_aux(p, scales, subst, extra_preds=None):
 		return root_fixed_alts + scalar_alts
 
 # @profile
-def alt(p, scales=[], subst=False, extra_preds=None):
+def alt(p, scales=[], subst=False, extra_preds=None, should_simplify = True):
 	"""
 	Simplifies the result of alt_aux for efficiency
 
 	1) Simplify trivial alternatives: A or A -> A, B and B -> B
 	2) Remove duplicate alternatives: {A, B, B, A or B} -> {A, B, A or B}
 	"""
-	return remove_doubles(simplify_alts(alt_aux(p, scales, subst, extra_preds)))
-	# return alt_aux(p, scales, subst)
+	alts = alt_aux(p, scales, subst, extra_preds)
+	if should_simplify:
+		alts = remove_doubles(simplify_alts(alts))
 
-
+	return alts
 
 
 def simplify_alt(alt):

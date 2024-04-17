@@ -26,7 +26,7 @@ class Exhaust:
 	"""
 	
 	
-	def __init__(self, prejacent, alts=None, scales=None, subst=None, extra_alts=[], extra_preds=None):
+	def __init__(self, prejacent, alts=None, scales=None, subst=None, extra_alts=[], extra_preds=None, should_simplify_alts=True):
 		"""
 		Arguments
 			- prejacent (Formula)       -- the prejacent
@@ -46,7 +46,7 @@ class Exhaust:
 			subst = options.sub
 
 		if alts is None: # if no alternative is given, compute them automatically
-			self.alts = alternatives.alt(prejacent, scales=scales, subst=subst, extra_preds=extra_preds)
+			self.alts = alternatives.alt(prejacent, scales=scales, subst=subst, extra_preds=extra_preds, should_simplify=should_simplify_alts)
 		else:
 			self.alts = alts
 		self.alts += extra_alts
@@ -221,8 +221,11 @@ class Exh(prop.Operator):
 	def diagnose(self, *args, **kwargs):
 		self.e.diagnose(*args, **kwargs)
 
+	def __members(self):
+		return self.children[0]
+
 	def __eq__(self, other):
-		return isinstance(other, Exh) and (self.children[0] == other.children[0])
+		return isinstance(other, Exh) and self.__members() == other.__members()
 
 	@property
 	def prejacent(self):
@@ -237,7 +240,7 @@ class Exh(prop.Operator):
 		return cls(other.children[0], alts = other.alts)
 
 	def __hash__(self):
-		return hash((self.__class__, self.e.p, tuple(self.alts)))
+		return hash(self.__members())
 
 
 

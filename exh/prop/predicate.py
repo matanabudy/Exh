@@ -126,11 +126,14 @@ class Pred(Formula):
 			self.free_vars = self.free_vars_
 			return self
 
+	def __members(self):
+		return self.idx
+
 	def __eq__(self, other):
-		return super(Pred, self).__eq__(other) and self.idx == other.idx
+		return super(Pred, self).__eq__(other) and self.__members() == other.__members()
 
 	def __hash__(self):
-		return hash(self.idx)
+		return hash(self.__members())
 
 	def vars(self):
 		size_domains = [domain.n for domain in self.domains]
