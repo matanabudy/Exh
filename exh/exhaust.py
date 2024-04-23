@@ -174,10 +174,11 @@ class Exh(prop.Operator):
 	latex_symbol = r"\textbf{Exh}"
 
 	substitutable = False
+	is_commutative = False
 	
 	def __init__(self, child, alts=None, scales=None, subst=None, ii=None, extra_alts=[], extra_preds=None):
 		self.e = Exhaust(child, alts, scales, subst, extra_alts, extra_preds)
-		super(Exh, self).__init__(None, child)
+		super(Exh, self).__init__(None, Exh.is_commutative, child)
 
 		if ii is None:
 			self.ii = options.ii_on
