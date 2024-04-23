@@ -1,68 +1,86 @@
 import sys
+
 # insert at 1, 0 is the script path (or '' in REPL)
 sys.path.insert(1, '../')
 
 from exh import *
 
-universe = Universe(fs=[a, b])
-# Test AND
-and_sentence = a & b
-evaluated = universe.evaluate(and_sentence)
 
-assert np.equal(evaluated, [[False], [False], [False], [True]]).all(), f"And failed: {evaluated}"
-assert a & b == b & a, f"And failed: {a & b} != {b & a}"
+def test_operator(operator, preds, is_commutative, expected_evaluation):
+    if operator == Not:
+        sentence = operator(preds[0])
+        reversed_sentence = sentence
+    else:
+        sentence = operator(*preds)
+        reversed_sentence = operator(*reversed(preds))
+    universe = Universe(fs=preds)
+    evaluated = universe.evaluate(sentence)
 
-# Test OR
-or_sentence = a | b
-evaluated = universe.evaluate(or_sentence)
+    assert np.equal(evaluated, expected_evaluation).all(), f"{sentence} failed: {evaluated}"
 
-assert np.equal(evaluated, [[False], [True], [True], [True]]).all(), f"Or failed: {evaluated}"
-assert a | b == b | a, f"Or failed: {a | b} != {b | a}"
+    if is_commutative:
+        assert sentence == reversed_sentence, f"{sentence} failed commutativity test"
+    else:
+        assert sentence != reversed_sentence, f"{sentence} failed commutativity test"
 
-# Test NOT
-not_sentence = ~a
-evaluated = universe.evaluate(not_sentence)
 
-assert np.equal(evaluated, [[True], [False], [True], [False]]).all(), f"Not failed: {evaluated}"
+# Tests config
+operators_tests = {
+    And:
+        {
+            "preds": [a, b],
+            "is_commutative": True,
+            "expected_evaluation": [[False], [False], [False], [True]]
+        },
+    Or:
+        {
+            "preds": [a, b],
+            "is_commutative": True,
+            "expected_evaluation": [[False], [True], [True], [True]]
+        },
+    Not:
+        {
+            "preds": [a, b],
+            "is_commutative": True,  # Vacuously true
+            "expected_evaluation": [[True], [False], [True], [False]]
+        },
+    Nand:
+        {
+            "preds": [a, b],
+            "is_commutative": True,
+            "expected_evaluation": [[True], [True], [True], [False]]
+        },
+    Nor:
+        {
+            "preds": [a, b],
+            "is_commutative": True,
+            "expected_evaluation": [[True], [False], [False], [False]]
+        },
+    Xor:
+        {
+            "preds": [a, b],
+            "is_commutative": True,
+            "expected_evaluation": [[False], [True], [True], [False]]
+        },
+    Iff:
+        {
+            "preds": [a, b],
+            "is_commutative": True,
+            "expected_evaluation": [[True], [False], [False], [True]]
+        },
+    OnlyL:
+        {
+            "preds": [a, b],
+            "is_commutative": False,
+            "expected_evaluation": [[False], [True], [False], [False]]
+        },
+    OnlyR:
+        {
+            "preds": [a, b],
+            "is_commutative": False,
+            "expected_evaluation": [[False], [False], [True], [False]]
+        }
+}
 
-# Test Nand
-nand_sentence = Nand(a, b)
-evaluated = universe.evaluate(nand_sentence)
-
-assert np.equal(evaluated, [[True], [True], [True], [False]]).all(), f"Nand failed: {evaluated}"
-assert Nand(a, b) == Nand(b, a), f"Nand failed: {Nand(a, b)} != {Nand(b, a)}"
-
-# Test Nor
-nor_sentence = Nor(a, b)
-evaluated = universe.evaluate(nor_sentence)
-
-assert np.equal(evaluated, [[True], [False], [False], [False]]).all(), f"Nor failed: {evaluated}"
-assert Nor(a, b) == Nor(b, a), f"Nor failed: {Nor(a, b)} != {Nor(b, a)}"
-
-# Test Xor
-xor_sentence = Xor(a, b)
-evaluated = universe.evaluate(xor_sentence)
-
-assert np.equal(evaluated, [[False], [True], [True], [False]]).all(), f"Xor failed: {evaluated}"
-assert Xor(a, b) == Xor(b, a), f"Xor failed: {Xor(a, b)} != {Xor(b, a)}"
-
-# Test Iff
-iff_sentence = Iff(a, b)
-evaluated = universe.evaluate(iff_sentence)
-
-assert np.equal(evaluated, [[True], [False], [False], [True]]).all(), f"Iff failed: {evaluated}"
-assert Iff(a, b) == Iff(b, a), f"Iff failed: {Iff(a, b)} != {Iff(b, a)}"
-
-# Test OnlyL
-onlyl_sentence = OnlyL(a, b)
-evaluated = universe.evaluate(onlyl_sentence)
-
-assert np.equal(evaluated, [[False], [True], [False], [False]]).all(), f"OnlyL failed: {evaluated}"
-assert OnlyL(a, b) != OnlyL(b, a), f"OnlyL failed: {OnlyL(a, b)} == {OnlyL(b, a)}"
-
-# Test OnlyR
-onlyr_sentence = OnlyR(a, b)
-evaluated = universe.evaluate(onlyr_sentence)
-
-assert np.equal(evaluated, [[False], [False], [True], [False]]).all(), f"OnlyR failed: {evaluated}"
-assert OnlyR(a, b) != OnlyR(b, a), f"OnlyR failed: {OnlyR(a, b)} == {OnlyR(b, a)}"
+for operator, test in operators_tests.items():
+    test_operator(operator, test["preds"], test["is_commutative"], test["expected_evaluation"])

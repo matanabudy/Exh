@@ -229,7 +229,7 @@ class Not(Operator):
     latex_symbol = r"\neg"
 
     fun_ = lambda x: np.squeeze(np.logical_not(x), axis = 0)
-    is_commutative = False
+    is_commutative = True  # Not is commutative vacuously
 
     """docstring for Not"""
     def __init__(self, child):
