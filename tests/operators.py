@@ -68,19 +68,56 @@ operators_tests = {
             "is_commutative": True,
             "expected_evaluation": [[True], [False], [False], [True]]
         },
-    OnlyL:
+    OnlyLeft:
         {
             "preds": [a, b],
             "is_commutative": False,
             "expected_evaluation": [[False], [True], [False], [False]]
         },
-    OnlyR:
+    OnlyRight:
         {
             "preds": [a, b],
             "is_commutative": False,
             "expected_evaluation": [[False], [False], [True], [False]]
-        }
+        },
+    RightImplies:
+        {
+            "preds": [a, b],
+            "is_commutative": False,
+            "expected_evaluation": [[True], [False], [True], [True]]
+        },
+    LeftImplies:
+        {
+            "preds": [a, b],
+            "is_commutative": False,
+            "expected_evaluation": [[True], [True], [False], [True]]
+        },
+    Left:
+        {
+            "preds": [a, b],
+            "is_commutative": False,
+            "expected_evaluation": [[False], [True], [False], [True]]
+        },
+    Right:
+        {
+            "preds": [a, b],
+            "is_commutative": False,
+            "expected_evaluation": [[False], [False], [True], [True]]
+        },
+    NotLeft:
+        {
+            "preds": [a, b],
+            "is_commutative": False,
+            "expected_evaluation": [[True], [False], [True], [False]]
+        },
+    NotRight:
+        {
+            "preds": [a, b],
+            "is_commutative": False,
+            "expected_evaluation": [[True], [True], [False], [False]]
+        },
 }
 
+print(f'Testing {len(operators_tests)} operators...')
 for operator, test in operators_tests.items():
     test_operator(operator, test["preds"], test["is_commutative"], test["expected_evaluation"])

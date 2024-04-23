@@ -279,7 +279,7 @@ class Iff(Operator):
     def __init__(self, *children):
         super(Iff, self).__init__(Iff.fun_, Iff.is_commutative, *children)
 
-class OnlyL(Operator):
+class OnlyLeft(Operator):
     plain_symbol = "onlyl"
     latex_symbol = r"\onlyl"
 
@@ -287,10 +287,10 @@ class OnlyL(Operator):
     is_commutative = False
 
     def __init__(self, *children):
-        super(OnlyL, self).__init__(OnlyL.fun_, OnlyL.is_commutative, *children)
+        super(OnlyLeft, self).__init__(OnlyLeft.fun_, OnlyLeft.is_commutative, *children)
 
 
-class OnlyR(Operator):
+class OnlyRight(Operator):
     plain_symbol = "onlyr"
     latex_symbol = r"\onlyr"
 
@@ -298,8 +298,68 @@ class OnlyR(Operator):
     is_commutative = False
 
     def __init__(self, *children):
-        super(OnlyR, self).__init__(OnlyR.fun_, OnlyR.is_commutative, *children)
+        super(OnlyRight, self).__init__(OnlyRight.fun_, OnlyRight.is_commutative, *children)
 
+class RightImplies(Operator):
+    plain_symbol = "->"
+    latex_symbol = r"\rightarrow"
+
+    fun_ = lambda array: ~array[0] | array[-1]
+    is_commutative = False
+
+    def __init__(self, *children):
+        super(RightImplies, self).__init__(RightImplies.fun_, RightImplies.is_commutative, *children)
+
+class LeftImplies(Operator):
+    plain_symbol = "<-"
+    latex_symbol = r"\leftarrow"
+
+    fun_ = lambda array: ~array[-1] | array[0]
+    is_commutative = False
+
+    def __init__(self, *children):
+        super(LeftImplies, self).__init__(LeftImplies.fun_, LeftImplies.is_commutative, *children)
+
+class Left(Operator):
+    plain_symbol = "left"
+    latex_symbol = r"\left"
+
+    fun_ = lambda array: array[0]
+    is_commutative = False
+
+    def __init__(self, *children):
+        super(Left, self).__init__(Left.fun_, Left.is_commutative, *children)
+
+
+class Right(Operator):
+    plain_symbol = "right"
+    latex_symbol = r"\right"
+
+    fun_ = lambda array: array[-1]
+    is_commutative = False
+
+    def __init__(self, *children):
+        super(Right, self).__init__(Right.fun_, Right.is_commutative, *children)
+
+class NotLeft(Operator):
+    plain_symbol = "notl"
+    latex_symbol = r"\notl"
+
+    fun_ = lambda array: ~array[0]
+    is_commutative = False
+
+    def __init__(self, *children):
+        super(NotLeft, self).__init__(NotLeft.fun_, NotLeft.is_commutative, *children)
+
+class NotRight(Operator):
+    plain_symbol = "notr"
+    latex_symbol = r"\notr"
+
+    fun_ = lambda array: ~array[-1]
+    is_commutative = False
+
+    def __init__(self, *children):
+        super(NotRight, self).__init__(NotRight.fun_, NotRight.is_commutative, *children)
 
 
 ############### TAUTOLOGIES AND ANTILOGIES ########
