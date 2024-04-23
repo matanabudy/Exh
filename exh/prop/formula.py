@@ -150,8 +150,9 @@ class Operator(Formula):
     plain_symbol = "op"
     latex_symbol = "\text{op}"
 
-    def __init__(self, fun, *children):
+    def __init__(self, fun, is_commutative, *children):
         super(Operator, self).__init__(*children)
+        self.is_commutative = is_commutative
         self.fun = fun
 
     def evaluate_aux(self, assignment, vm, variables = dict(), free_vars = list()):
@@ -185,10 +186,16 @@ class Operator(Formula):
         return self.children
 
     def __eq__(self, other):
-        return self.__class__ is other.__class__ and Counter(self.__members()) == Counter(other.__members())
+        if self.__class__ is not other.__class__:
+            return False
+
+        if self.is_commutative:
+            return Counter(self.__members()) == Counter(other.__members())
+        else:
+            return self.__members() == other.__members()
 
     def __hash__(self):
-        str_memebrs = sorted([str(m) for m in self.__members()])
+        str_memebrs = sorted([str(m) for m in self.__members()])  # TODO: Why str
         return hash((self.__class__, tuple(str_memebrs)))
 
 
@@ -197,10 +204,11 @@ class And(Operator):
     latex_symbol = r"\land"
 
     fun_ = lambda array: np.min(array, axis = 0)
+    is_commutative = True
 
     """docstring for And"""
     def __init__(self, *children):
-        super(And, self).__init__(And.fun_, *children)
+        super(And, self).__init__(And.fun_, And.is_commutative, *children)
 
 
 class Or(Operator):
@@ -208,10 +216,11 @@ class Or(Operator):
     latex_symbol = r"\lor"
 
     fun_ = lambda array: np.max(array, axis = 0)
+    is_commutative = True
 
     """docstring for Or"""
     def __init__(self, *children):
-        super(Or, self).__init__(Or.fun_, *children)
+        super(Or, self).__init__(Or.fun_, Or.is_commutative, *children)
 
 class Not(Operator):
     no_parenthesis = True
@@ -220,10 +229,11 @@ class Not(Operator):
     latex_symbol = r"\neg"
 
     fun_ = lambda x: np.squeeze(np.logical_not(x), axis = 0)
+    is_commutative = False
 
     """docstring for Not"""
     def __init__(self, child):
-        super(Not, self).__init__(Not.fun_, child)
+        super(Not, self).__init__(Not.fun_, Not.is_commutative, child)
 
 
 class Nand(Operator):
@@ -231,9 +241,10 @@ class Nand(Operator):
     latex_symbol = r"\nand"
 
     fun_ = lambda array: ~np.min(array, axis=0)
+    is_commutative = True
 
     def __init__(self, *children):
-        super(Nand, self).__init__(Nand.fun_, *children)
+        super(Nand, self).__init__(Nand.fun_, Nand.is_commutative, *children)
 
 
 class Nor(Operator):
@@ -241,9 +252,10 @@ class Nor(Operator):
     latex_symbol = r"\nor"
 
     fun_ = lambda array: ~np.max(array, axis=0)
+    is_commutative = True
 
     def __init__(self, *children):
-        super(Nor, self).__init__(Nor.fun_, *children)
+        super(Nor, self).__init__(Nor.fun_, Nor.is_commutative, *children)
 
 
 class Xor(Operator):
@@ -251,9 +263,10 @@ class Xor(Operator):
     latex_symbol = r"\xor"
 
     fun_ = lambda array: np.max(array, axis=0) & ~np.min(array, axis=0)
+    is_commutative = True
 
     def __init__(self, *children):
-        super(Xor, self).__init__(Xor.fun_, *children)
+        super(Xor, self).__init__(Xor.fun_, Xor.is_commutative, *children)
 
 
 class Iff(Operator):
@@ -261,10 +274,31 @@ class Iff(Operator):
     latex_symbol = r"\iff"
 
     fun_ = lambda array: np.min(array, axis=0) | ~np.max(array, axis=0)
+    is_commutative = True
 
     def __init__(self, *children):
-        super(Iff, self).__init__(Iff.fun_, *children)
+        super(Iff, self).__init__(Iff.fun_, Iff.is_commutative, *children)
 
+class OnlyL(Operator):
+    plain_symbol = "onlyl"
+    latex_symbol = r"\onlyl"
+
+    fun_ = lambda array: array[0] & np.all(~array[1:], axis = 0)
+    is_commutative = False
+
+    def __init__(self, *children):
+        super(OnlyL, self).__init__(OnlyL.fun_, OnlyL.is_commutative, *children)
+
+
+class OnlyR(Operator):
+    plain_symbol = "onlyr"
+    latex_symbol = r"\onlyr"
+
+    fun_ = lambda array: array[-1] & np.all(~array[:-1], axis = 0)
+    is_commutative = False
+
+    def __init__(self, *children):
+        super(OnlyR, self).__init__(OnlyR.fun_, OnlyR.is_commutative, *children)
 
 
 
