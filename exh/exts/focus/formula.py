@@ -33,11 +33,14 @@ class Focus(Formula):
 
 
 
+	def _members(self):
+		return self.children[0]
 
-
+	def __hash__(self):
+		return hash((super(Focus, self).__hash__(), self._members()))
 
 	def __eq__(self, other):
-		return super(Focus, self).__eq__(other) and self.children[0] == other.children[0]
+		return super(Focus, self).__eq__(other) and self._members() == other._members()
 
 
 	def display_aux(self, latex):

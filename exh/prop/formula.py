@@ -64,6 +64,9 @@ class Formula(IteratorType, Display, Evaluate): # Using sub-classing to spread c
         """Returns true if two formulas are syntactically the same, up to constituent reordering (overridden by children classes)"""
         return self.__class__ is other.__class__
 
+    def __hash__(self):
+        return hash(self.__class__)
+
 
 
     ### FORMULA MANIPULATION METHODS ###
