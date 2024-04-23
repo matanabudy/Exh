@@ -195,8 +195,8 @@ class Operator(Formula):
             return self.__members() == other.__members()
 
     def __hash__(self):
-        str_memebrs = sorted([str(m) for m in self.__members()])  # TODO: Why str
-        return hash((self.__class__, tuple(str_memebrs)))
+        # TODO: This is hacky since we cannot enforce ordering of members
+        return hash((self.__class__, tuple(sorted([str(m) for m in self.__members()]))))
 
 
 class And(Operator):
