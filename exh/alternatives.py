@@ -66,7 +66,7 @@ def find_maximal_sets(universe, props, variables = None):
 
 
 # @profile
-def alt_aux(p, scales, subst, extra_preds=None):
+def alt_aux(p, scales, subst, extra_preds=None, prejacent_alternative_to_exh=False):
 	"""
 	Return alternatives to a formula following a Sauerland-esque algorithm. 
 	Specifically, an alternative is anything which can be obtained from the prejacent by sub-constituent replacement ("A" is an alternative to "A or B"), scale replacement ("a or b" is an alternative to "a and b")
@@ -100,7 +100,7 @@ def alt_aux(p, scales, subst, extra_preds=None):
 		) 
 
 		# Somehow, sub-constituent alternative must not be disallowed to derive FC -- something to investigate
-		if subst and options.prejacent_alternative_to_exh:
+		if subst and prejacent_alternative_to_exh:
 			exh_alternatives.extend(p.alts)
 
 		# exh_alternatives = [exhaust.Exh(alt, alts = all_alternatives[:i] + all_alternatives[i + 1:]) 
@@ -112,7 +112,7 @@ def alt_aux(p, scales, subst, extra_preds=None):
 
 
 	# Recursively obtain the alternatives of the children nodes of the prejacent 
-	children_alternative = [alt_aux(child, scales, subst, extra_preds) for child in p.children]
+	children_alternative = [alt_aux(child, scales, subst, extra_preds, prejacent_alternative_to_exh) for child in p.children]
 
 
 	root_fixed_alts = [] # alternatives which have the same root operator as the prejacent (ie. a | (b & c) as an alternative to a | (b | c), preserves root or)
@@ -148,14 +148,14 @@ def alt_aux(p, scales, subst, extra_preds=None):
 		return root_fixed_alts + scalar_alts
 
 # @profile
-def alt(p, scales=[], subst=False, extra_preds=None, should_simplify = True):
+def alt(p, scales=[], subst=False, extra_preds=None, prejacent_alternative_to_exh=False, should_simplify = True):
 	"""
 	Simplifies the result of alt_aux for efficiency
 
 	1) Simplify trivial alternatives: A or A -> A, B and B -> B
 	2) Remove duplicate alternatives: {A, B, B, A or B} -> {A, B, A or B}
 	"""
-	alts = alt_aux(p, scales, subst, extra_preds)
+	alts = alt_aux(p, scales, subst, extra_preds, prejacent_alternative_to_exh)
 	if should_simplify:
 		alts = remove_doubles(simplify_alts(alts))
 

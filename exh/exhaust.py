@@ -26,7 +26,7 @@ class Exhaust:
 	"""
 	
 	
-	def __init__(self, prejacent, alts=None, scales=None, subst=None, extra_alts=[], extra_preds=None, should_simplify_alts=True):
+	def __init__(self, prejacent, alts=None, scales=None, subst=None, extra_alts=[], extra_preds=None, prejacent_alternative_to_exh=False, should_simplify_alts=True):
 		"""
 		Arguments
 			- prejacent (Formula)       -- the prejacent
@@ -46,7 +46,9 @@ class Exhaust:
 			subst = options.sub
 
 		if alts is None: # if no alternative is given, compute them automatically
-			self.alts = alternatives.alt(prejacent, scales=scales, subst=subst, extra_preds=extra_preds, should_simplify=should_simplify_alts)
+			self.alts = alternatives.alt(prejacent, scales=scales, subst=subst, extra_preds=extra_preds,
+										 prejacent_alternative_to_exh=prejacent_alternative_to_exh,
+										 should_simplify=should_simplify_alts)
 		else:
 			self.alts = alts
 		self.alts += extra_alts
@@ -176,8 +178,9 @@ class Exh(prop.Operator):
 	substitutable = False
 	is_commutative = False
 	
-	def __init__(self, child, alts=None, scales=None, subst=None, ii=None, extra_alts=[], extra_preds=None):
-		self.e = Exhaust(child, alts, scales, subst, extra_alts, extra_preds)
+	def __init__(self, child, alts=None, scales=None, subst=None, ii=None, extra_alts=[], extra_preds=None, prejacent_alternative_to_exh=False):
+		self.e = Exhaust(prejacent=child, alts=alts, scales=scales, subst=subst, extra_alts=extra_alts,
+						 extra_preds=extra_preds, prejacent_alternative_to_exh=prejacent_alternative_to_exh)
 		super(Exh, self).__init__(None, Exh.is_commutative, child)
 
 		if ii is None:
