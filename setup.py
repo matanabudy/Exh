@@ -1,5 +1,7 @@
-import exh
 from setuptools import setup
+
+# Directly specify version
+version = "1.1.2"
 
 long_desc = """\
 Exh 
@@ -15,7 +17,7 @@ Other tutorials covering more advanced features and more complicated examples ar
 
 setup(
     name             = "Exh",
-    version          = exh.__version__,
+    version          = version,
     description      = "Computes innocent exclusion/inclusions exhaustivity",
     long_description = long_desc,
     long_description_content_type = "text/markdown",
